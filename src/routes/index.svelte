@@ -9,7 +9,7 @@
 
 <div class="todos">
     <h1>{title}</h1>
-    <form class="add-new">
+    <form class="add-new" action="/api/todos" method="post">
         <input type="text" name="todo" aria-label="Add a todo" placeholder="+ Type to add a todo">
     </form>
     <TodoItem/>
