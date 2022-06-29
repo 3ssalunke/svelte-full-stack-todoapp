@@ -14,7 +14,7 @@ export const get: RequestHandler = async() => {
 
 export const post: RequestHandler = async({request}) => {
     const data = await request.formData()
-    const text = data.get("text") as string
+    const text = data.get("todo") as string
     todos.push({
         created_at: new Date(),
         text,
