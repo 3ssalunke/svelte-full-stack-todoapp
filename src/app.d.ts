@@ -10,6 +10,7 @@ declare namespace App {
 }
 
 type Todo = {
+	uid: number,
 	created_at: Date,
 	text: string,
 	done: boolean
