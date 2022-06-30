@@ -32,9 +32,11 @@ export const api = async(requestEvt: RequestEvent) => {
         case "PATCH":
             data = await requestEvt.request.formData();
             text = data.get("todo") as string;
+            let done = data.has("done") ? !!data.get("done") : false;
             todos = todos.map(todo => {
                 if(todo.uid === parseInt(requestEvt.params.uid)){
-                    todo.text = text
+                    if(text) todo.text = text;
+                    todo.done = done;
                 }
                 return todo;
             })
