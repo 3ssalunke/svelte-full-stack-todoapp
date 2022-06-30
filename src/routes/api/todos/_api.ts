@@ -3,32 +3,34 @@ import type { RequestEvent } from "@sveltejs/kit";
 let todos: Todo[] = [];
 
 export const api = async(requestEvt: RequestEvent) => {
+    let body = {};
+    let status = 200;
     let data: FormData;
     let text: string;
+    let _todo;
     switch(requestEvt.request.method.toUpperCase()){
         case "GET":
-            return {
-                body: {
-                    message: "success",
-                    todos
-                },
-                status: 200
+            body = {
+                message: "success",
+                todos
             }
+            break;
         case "POST":
             data = await requestEvt.request.formData();
             text = data.get("todo") as string;
-            todos.push({
+            _todo = {
                 uid: Math.floor(Math.random() * 10000),
                 created_at: new Date(),
                 text,
                 done: false
-            });
-            return {
-                status: 303,
-                headers: {
-                    location: "/"
-                }
             }
+            todos.push(_todo);
+            body = {
+                message: "success",
+                todo: _todo
+            };
+            status = 201;
+            break
         case "PATCH":
             data = await requestEvt.request.formData();
             text = data.get("todo") as string;
@@ -37,27 +39,40 @@ export const api = async(requestEvt: RequestEvent) => {
                 if(todo.uid === parseInt(requestEvt.params.uid)){
                     if(text) todo.text = text;
                     todo.done = done;
+                    _todo = todo;
                 }
                 return todo;
             })
-            return {
-                status: 303,
-                headers: {
-                    location: "/"
-                }
-            };
+            body = {
+                message: "success",
+                todo: _todo
+            }
+            status = 200;
+            break;
         case "DELETE":
             todos = todos.filter(todo => todo.uid !== parseInt(requestEvt.params.uid));
-            return {
-                status: 303,
-                headers: {
-                    location: "/"
-                }
+            body = {
+                message: "success",
             }
+            status = 200;
+            break;
         default:
-            return {
-                status: 500,
-                body: {}
-            };
+            break;
+    }
+
+    if (requestEvt.request.method.toUpperCase() !== "GET" &&
+        requestEvt.request.headers.get("accept") !== "application/json") 
+    {
+        return {
+            status: 303,
+            headers: {
+                location: "/"
+            }
+        };
+    }
+
+    return{
+        status,
+        body
     }
 }
