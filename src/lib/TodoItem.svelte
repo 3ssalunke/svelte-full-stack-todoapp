@@ -1,13 +1,17 @@
-<div class="todo done">
-    <form>
-        <input type="hidden" name="done" value="">
-        <button aria-label="Mark done/not done" class="toggle"></button>
+<script lang="ts">
+    export let todo: Todo
+</script>
+
+<div class="todo" class:done={todo.done}>
+    <form action="/api/todos/{todo.uid}?_method=patch" method="post">
+        <input type="hidden" name="done" value="{todo.done ? '' : 'true'}">
+        <button aria-label="Mark todo as {todo.done ? "not done" : "done"}" class="toggle"></button>
     </form>
-    <form class="text">
-        <input type="text">
+    <form class="text" action="/api/todos/{todo.uid}?_method=patch" method="post">
+        <input type="text" name="todo" value="{todo.text}">
         <button aria-label="Save a todo" class="save"></button>
     </form>
-    <form>
+    <form action="/api/todos/{todo.uid}?_method=delete" method="post">
         <button aria-label="Delete a todo" class="delete"></button>
     </form>
 </div>
@@ -80,13 +84,13 @@
         opacity: 1;
     }
 
-    /* .done {
+    .done {
         transform: none;
         opacity: 0.4;
         filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.1));
     }
 
-    .toggle {
+    .done .toggle {
         background-image: url("data:image/svg+xml,%3Csvg width='22' height='16' viewBox='0 0 22 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20.5 1.5L7.4375 14.5L1.5 8.5909' stroke='%23676778' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    } */
+    }
 </style>

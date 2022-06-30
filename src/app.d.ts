@@ -8,3 +8,10 @@ declare namespace App {
 	// interface Session {}
 	// interface Stuff {}
 }
+
+type Todo = {
+	uid: number,
+	created_at: Date,
+	text: string,
+	done: boolean
+}
