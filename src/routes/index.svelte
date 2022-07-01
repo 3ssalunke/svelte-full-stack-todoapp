@@ -25,13 +25,13 @@
     const title = "Todo";
 
     const processNewTodoResult = (res:any, form: HTMLFormElement) => {
-        todos = [...todos, res.todo];
+        todos = [...todos, res];
         form.reset();
     };
 
     const processUpdateTodoResult = (res:any, form: HTMLFormElement) => {
         todos = todos.map(t => {
-            if(t.uid === res.todo.uid) return res.todo;
+            if(t.uid === res.uid) return res;
             return t;
         });
         form.reset();

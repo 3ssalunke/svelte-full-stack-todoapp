@@ -1,56 +1,49 @@
 import type { RequestEvent } from "@sveltejs/kit";
+import PrismaClient from "$lib/prisma"
 
-let todos: Todo[] = [];
+const primsa = new PrismaClient()
 
 export const api = async(requestEvt: RequestEvent) => {
     let body = {};
     let status = 200;
     let data: FormData;
     let text: string;
-    let _todo;
+
     switch(requestEvt.request.method.toUpperCase()){
         case "GET":
             body = {
                 message: "success",
-                todos
+                todos: await primsa.todo.findMany()
             }
             break;
         case "POST":
             data = await requestEvt.request.formData();
             text = data.get("todo") as string;
-            _todo = {
-                uid: Math.floor(Math.random() * 10000),
-                created_at: new Date(),
-                text,
-                done: false
-            }
-            todos.push(_todo);
-            body = {
-                message: "success",
-                todo: _todo
-            };
+            body = await primsa.todo.create({
+                data: {
+                    created_at: new Date(),
+                    text,
+                    done: false
+                }
+            });
             status = 201;
-            break
+            break;
         case "PATCH":
             data = await requestEvt.request.formData();
             text = data.get("todo") as string;
-            let done = data.has("done") ? !!data.get("done") : false;
-            todos = todos.map(todo => {
-                if(todo.uid === parseInt(requestEvt.params.uid)){
-                    if(text) todo.text = text;
-                    todo.done = done;
-                    _todo = todo;
-                }
-                return todo;
-            })
-            body = {
-                message: "success",
-                todo: _todo
-            }
+            let done = data.get("done");
+            let _data: any = {};
+            if(text) _data.text = text
+            if(done==="true") _data.done = true;
+            if(done === "") _data.done = false;
+            body = await primsa.todo.update({
+                where: {uid: parseInt(requestEvt.params.uid)},
+                data: _data
+            });
             status = 200;
             break;
         case "DELETE":
-            todos = todos.filter(todo => todo.uid !== parseInt(requestEvt.params.uid));
+            await primsa.todo.delete({where: {uid: parseInt(requestEvt.params.uid)}});
             body = {
                 message: "success",
             }
